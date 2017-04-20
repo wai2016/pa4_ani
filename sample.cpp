@@ -475,6 +475,9 @@ void SampleModel::draw()
 			glPopMatrix();
 		}
 	glPopMatrix();
+
+	//*** DON'T FORGET TO PUT THIS IN YOUR OWN CODE **/
+	endDraw();
 }
 
 int main()

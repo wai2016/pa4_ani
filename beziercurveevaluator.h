@@ -14,6 +14,9 @@ public:
 		std::vector<Point>& ptvEvaluatedCurvePts,
 		const float& fAniLength,
 		const bool& bWrap) const;
+
+	void displayBezier(const Point c1, const Point c2, const Point c3, const Point c4,
+		std::vector<Point>& ptvEvaluatedCurvePts) const;
 };
 
 #endif

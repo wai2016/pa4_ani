@@ -31,12 +31,17 @@ void BezierCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts,
 				{
 					poly = Mat4f(pow(j, 3), pow(j, 2), j, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 					ans = poly * baseXpoints;
+
+					// special cases (x = 0)
+					if (ptvCtrlPts[0].x <= 0.00001)
+						y2 = ptvCtrlPts[0].y;
+
 					if (ans[0][0] > x2)
 					{
 						ptvEvaluatedCurvePts.push_back(Point(ans[0][0] - x2, ans[0][1]));
 						if (last)
 						{
-							y2 = ans[0][1] - interval;
+							y2 = ans[0][1];
 							last = false;
 						}
 					}
@@ -72,17 +77,7 @@ void BezierCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts,
 	// bezier curve
 	for (int i = 0; i < (iCtrlPtCount - 1) / 3; ++i)
 	{
-		Mat4f points(ptvCtrlPts[i * 3 + 0].x, ptvCtrlPts[i * 3 + 0].y, 0, 0, ptvCtrlPts[i * 3 + 1].x, ptvCtrlPts[i * 3 + 1].y, 0, 0, ptvCtrlPts[i * 3 + 2].x, ptvCtrlPts[i * 3 + 2].y, 0, 0, ptvCtrlPts[i * 3 + 3].x, ptvCtrlPts[i * 3 + 3].y, 0, 0);
-		Mat4f baseXpoints = base * points;
-		Mat4f poly, ans;
-		ptvEvaluatedCurvePts.push_back(Point(ptvCtrlPts[i * 3 + 0].x, ptvCtrlPts[i * 3 + 0].y)); // first point, repeated?
-		for (float j = 0.0; j < 1.0; j += interval)
-		{
-			poly = Mat4f(pow(j, 3), pow(j, 2), j, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-			ans = poly * baseXpoints;
-			ptvEvaluatedCurvePts.push_back(Point(ans[0][0], ans[0][1]));
-		}
-		ptvEvaluatedCurvePts.push_back(Point(ptvCtrlPts[i * 3 + 3].x, ptvCtrlPts[i * 3 + 3].y)); // last point, repeated?
+		displayBezier(ptvCtrlPts[i * 3 + 0], ptvCtrlPts[i * 3 + 1], ptvCtrlPts[i * 3 + 2], ptvCtrlPts[i * 3 + 3], ptvEvaluatedCurvePts);
 	}
 
 	if (!(bWrap && left == 3))
@@ -91,5 +86,22 @@ void BezierCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts,
 		for (int i = 0; i < left; ++i)
 			ptvEvaluatedCurvePts.push_back(Point(ptvCtrlPts[i + iCtrlPtCount - left].x, ptvCtrlPts[i + iCtrlPtCount - left].y));
 	}
+}
+
+void BezierCurveEvaluator::displayBezier(const Point c1, const Point c2, const Point c3, const Point c4, std::vector<Point>& ptvEvaluatedCurvePts) const
+{
+	Mat4f base(-1, 3, -3, 1, 3, -6, 3, 0, -3, 3, 0, 0, 1, 0, 0, 0);
+	float interval = 0.001;
+	Mat4f points(c1.x, c1.y, 0, 0,c2.x, c2.y, 0, 0, c3.x, c3.y, 0, 0, c4.x, c4.y, 0, 0);
+	Mat4f baseXpoints = base * points;
+	Mat4f poly, ans;
+	ptvEvaluatedCurvePts.push_back(c1); // first point, repeated?
+	for (float j = 0.0; j < 1.0; j += interval)
+	{
+		poly = Mat4f(pow(j, 3), pow(j, 2), j, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+		ans = poly * baseXpoints;
+		ptvEvaluatedCurvePts.push_back(Point(ans[0][0], ans[0][1]));
+	}
+	ptvEvaluatedCurvePts.push_back(c4); // last point, repeated?
 }
 

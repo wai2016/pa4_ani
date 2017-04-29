@@ -21,6 +21,20 @@ void BsplineCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts,
 		Point e2(ptvCtrlPts[1].x + fAniLength, ptvCtrlPts[1].y);
 		myPts.push_back(e1);
 		myPts.push_back(e2);
+
+		Point e3;
+		if (iCtrlPtCount > 2)
+		{
+			e3.x = ptvCtrlPts[2].x + fAniLength;
+			e3.y = ptvCtrlPts[2].y;
+			myPts.push_back(e3);
+		}
+		else
+		{
+			e3.x = ptvCtrlPts[1].x - fAniLength;
+			e3.y = ptvCtrlPts[1].y;
+			myPts.insert(myPts.begin(), e3);
+		}
 	}
 	else
 	{
@@ -32,7 +46,7 @@ void BsplineCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts,
 	}
 
 	// bspline curve
-	for (int i = 0; i < iCtrlPtCount - 3 + 2; ++i)
+	for (int i = 0; i < myPts.size() - 3; ++i)
 	{
 		displayBspline(myPts[i], myPts[i + 1], myPts[i + 2], myPts[i + 3], ptvEvaluatedCurvePts);
 	}
@@ -55,7 +69,7 @@ void BsplineCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts,
 					maxCount = i;
 				}
 			}
-			y2 = ptvCtrlPts[maxCount].y;
+			y2 = ptvEvaluatedCurvePts[maxCount].y;
 			y1 = y2;
 		}
 		else

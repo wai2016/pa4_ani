@@ -15,9 +15,8 @@ public:
 		const float& fAniLength,
 		const bool& bWrap) const;
 
-	void displayCatmullRom(const Point c1, const Point c2, const Point c3, const Point c4,
-		std::vector<Point>& ptvEvaluatedCurvePts, 
-		const float tension) const;
+	void displayCatmullRom(const Point c1, const Point d1, const Point c2, const Point d2,
+		std::vector<Point>& ptvEvaluatedCurvePts) const;
 };
 
 #endif

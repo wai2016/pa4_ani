@@ -22,7 +22,7 @@ void CatmullRomCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPt
 		Point e2(ptvCtrlPts[1].x + fAniLength, ptvCtrlPts[1].y);
 		myPts.push_back(e1);
 		myPts.push_back(e2);
-
+		/*
 		Point e3;
 		if (iCtrlPtCount > 2)
 		{
@@ -36,20 +36,24 @@ void CatmullRomCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPt
 			e3.y = ptvCtrlPts[1].y;
 			myPts.insert(myPts.begin(), e3);
 		}
-	}
-	else
-	{
-		// hack
-		myPts.insert(myPts.begin(), ptvCtrlPts[0]);
-		myPts.push_back(ptvCtrlPts[iCtrlPtCount - 1]);
-		//ptvEvaluatedCurvePts.push_back(ptvCtrlPts[0]);
-		//ptvEvaluatedCurvePts.push_back(ptvCtrlPts[iCtrlPtCount - 1]);
+		*/
 	}
 
-	// bspline curve
-	for (int i = 0; i < iCtrlPtCount - 3; ++i)
+	// catmull-rom curve
+	if (myPts.size() > 2)
 	{
-		displayCatmullRom(ptvCtrlPts[i], ptvCtrlPts[i + 1], ptvCtrlPts[i + 2], ptvCtrlPts[i + 3], ptvEvaluatedCurvePts, tension);
+		Point d1(tension * (myPts[1].x - myPts[0].x) / 3, tension * (myPts[1].y - myPts[0].y) / 3);
+		Point d2(tension * (myPts[2].x - myPts[0].x) / 3, tension * (myPts[2].y - myPts[0].y) / 3);
+		displayCatmullRom(myPts[0], d1, myPts[1], d2, ptvEvaluatedCurvePts);
+		for (int i = 1; i < myPts.size() - 2; ++i)
+		{
+			d1 = Point(tension * (myPts[i + 1].x - myPts[i - 1].x) / 3, tension * (myPts[i + 1].y - myPts[i - 1].y) / 3);
+			d2 = Point(tension * (myPts[i + 2].x - myPts[i].x) / 3, tension * (myPts[i + 2].y - myPts[i].y) / 3);
+			displayCatmullRom(myPts[i], d1, myPts[i + 1], d2, ptvEvaluatedCurvePts);
+		}
+		d1 = Point(tension * (myPts[myPts.size() - 1].x - myPts[myPts.size() - 3].x) / 3, tension * (myPts[myPts.size() - 1].y - myPts[myPts.size() - 3].y) / 3);
+		d2 = Point(tension * (myPts[myPts.size() - 1].x - myPts[myPts.size() - 2].x) / 3, tension * (myPts[myPts.size() - 1].y - myPts[myPts.size() - 2].y) / 3);
+		displayCatmullRom(myPts[myPts.size() - 2], d1, myPts[myPts.size() - 1], d2, ptvEvaluatedCurvePts);
 	}
 
 	float x1 = 0.0;
@@ -90,13 +94,13 @@ void CatmullRomCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPt
 	ptvEvaluatedCurvePts.push_back(Point(x2, y2));
 }
 
-void CatmullRomCurveEvaluator::displayCatmullRom(const Point c1, const Point c2, const Point c3, const Point c4, std::vector<Point>& ptvEvaluatedCurvePts, const float tension) const
+void CatmullRomCurveEvaluator::displayCatmullRom(const Point c1, const Point d1, const Point c2, const Point d2, std::vector<Point>& ptvEvaluatedCurvePts) const
 {
 	// convert points into bezier control points
-	Point v1(c2);
-	Point v2(c2.x + tension * (c3.x - c1.x) / 3, c2.y + tension * (c3.y - c1.y) / 3);
-	Point v3(c3.x - tension * (c4.x - c2.x) / 3, c3.y - tension * (c4.y - c2.y) / 3);
-	Point v4(c3);
+	Point v1(c1);
+	Point v2(c1.x + d1.x, c1.y + d1.y);
+	Point v3(c2.x - d2.x, c2.y - d2.y);
+	Point v4(c2);
 	BezierCurveEvaluator bezier;
 
 	bezier.displayBezier(v1, v2, v3, v4, ptvEvaluatedCurvePts);

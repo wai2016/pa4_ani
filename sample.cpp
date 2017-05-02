@@ -13,7 +13,11 @@
 #include <string>
 
 #include "modelerglobals.h"
+#include "mat.h"
+#include "vec.h"
+
 using namespace std;
+
 
 // To make a SampleModel, we inherit off of ModelerView
 class SampleModel : public ModelerView 
@@ -30,6 +34,38 @@ public:
 ModelerView* createSampleModel(int x, int y, int w, int h, char *label)
 { 
     return new SampleModel(x,y,w,h,label); 
+}
+
+Mat4f getModelViewMatrix() {
+	GLfloat m[16];
+	glGetFloatv(GL_MODELVIEW_MATRIX, m);
+	Mat4f matMV(m[0], m[1], m[2], m[3],
+		m[4], m[5], m[6], m[7],
+		m[8], m[9], m[10], m[11],
+		m[12], m[13], m[14], m[15]);
+
+	return matMV.transpose();
+}
+
+void SpawnParticles(Mat4f cameraTransform) {
+	Mat4f WorldMatrix = cameraTransform.inverse() * getModelViewMatrix();
+	GLfloat* fWorldMatrix = new GLfloat[16];
+	WorldMatrix.getGLMatrix(fWorldMatrix);
+	Vec4f WorldPoint(fWorldMatrix[12], fWorldMatrix[13], fWorldMatrix[14], fWorldMatrix[15]);
+	GLfloat* glWorldMatrix = new GLfloat [16];
+	ParticleSystem* ps = ModelerApplication::Instance()->GetParticleSystem();
+	WorldMatrix.inverse().getGLMatrix(glWorldMatrix);
+	glMultMatrixf(glWorldMatrix);
+	int a = rand() % 20 - 10;
+	int b = rand() % 20 - 10;
+	int c = rand() % 20 - 10;
+	int d = rand() % 20 - 10;
+	ps->addParticle(Vec3f(WorldPoint[0], WorldPoint[1], WorldPoint[2]), Vec3f(a, WorldPoint[1] - 4.8, b), Vec3f(c, -9.81, d), 1);
+	delete[] glWorldMatrix;
+	delete[] fWorldMatrix;
+	float t = ModelerApplication::Instance()->GetTime();
+	ps->computeForcesAndUpdateParticles(t, Vec3f(WorldPoint[0] - 1, WorldPoint[1], WorldPoint[2]));
+	ps->drawParticles(t);
 }
 
 void drawLsystem(int depth)
@@ -96,6 +132,7 @@ void SampleModel::draw()
     // matrix stuff.  Unless you want to fudge directly with the 
 	// projection matrix, don't bother with this ...
     ModelerView::draw();
+	Mat4f CameraMatrix = getModelViewMatrix();
 
 	//Lighting
 	glEnable(GL_LIGHT2);
@@ -129,7 +166,6 @@ void SampleModel::draw()
 	// draw the sample model
 	setAmbientColor(.1f,.1f,.1f);
 	setDiffuseColor(COLOR_GREEN);
-
 	glPushMatrix();
 	glTranslated(0, 0, -5);
 	drawLsystem(VAL(LDEPTH));
@@ -222,6 +258,9 @@ void SampleModel::draw()
 								glTranslated(0, 1 - sizeJ * 2 + 0.2, 0);
 								glScaled(1, 1, 1);
 								drawSphere(0.2);
+								glPushMatrix();
+								SpawnParticles(CameraMatrix);
+								glPopMatrix();
 							}
 						}
 					glPopMatrix();
@@ -511,6 +550,8 @@ int main()
 	controls[LDEPTH] = ModelerControl("Depth of L-system", 0, 6, 1, 0);
 	controls[LANGLE] = ModelerControl("Angle of L-system", 0, 359, 1, 60);
 
+	ParticleSystem *ps = new ParticleSystem();
+	ModelerApplication::Instance()->SetParticleSystem(ps);
     ModelerApplication::Instance()->Init(&createSampleModel, controls, NUMCONTROLS);
     return ModelerApplication::Instance()->Run();
 }

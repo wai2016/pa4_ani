@@ -17,8 +17,9 @@
 #define __PARTICLE_SYSTEM_H__
 
 #include "vec.h"
-
-
+#include "particle.h"
+#include <vector>
+#include <map>
 
 class ParticleSystem {
 
@@ -44,7 +45,7 @@ public:
 
 	// This function should compute forces acting on all particles
 	// and update their state (pos and vel) appropriately.
-	virtual void computeForcesAndUpdateParticles(float t);
+	virtual void computeForcesAndUpdateParticles(float t, Vec3f x_one);
 
 	// This function should reset the system to its initial state.
 	// When you need to reset your simulation, PLEASE USE THIS FXN.
@@ -72,6 +73,8 @@ public:
 	bool isDirty() { return dirty; }
 	void setDirty(bool d) { dirty = d; }
 
+	void addParticle(Vec3f p, Vec3f v, Vec3f f, float m);
+
 
 
 protected:
@@ -88,6 +91,10 @@ protected:
 	/** General state variables **/
 	bool simulate;						// flag for simulation mode
 	bool dirty;							// flag for updating ui (don't worry about this)
+
+	std::vector <Particle> ParticleArray;
+
+	std::map <float, std::vector <Particle>> BakeArray;
 
 };
 

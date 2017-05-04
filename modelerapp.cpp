@@ -142,6 +142,16 @@ void ModelerApplication::SetParticleSystem(ParticleSystem *s)
 	ps = s;
 }
 
+ParticleSystem *ModelerApplication::GetParticleSystemCloth()
+{
+	return cloth;
+}
+
+void ModelerApplication::SetParticleSystemCloth(ParticleSystem *s)
+{
+	cloth = s;
+}
+
 float ModelerApplication::GetTime()
 {
 	return m_ui->currTime();

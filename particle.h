@@ -7,7 +7,6 @@
 class Particle
 {
 public:
-	Particle();
 	Particle(Vec3f p, Vec3f v, Vec3f f, float m);
 	~Particle();
 

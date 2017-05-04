@@ -19,7 +19,7 @@
 #include "bitmap.h"
 
 using namespace std;
-
+extern Vec3f old_x_one;
 
 // To make a SampleModel, we inherit off of ModelerView
 class SampleModel : public ModelerView 
@@ -49,12 +49,12 @@ Mat4f getModelViewMatrix() {
 	return matMV.transpose();
 }
 
-void SpawnParticles(Mat4f cameraTransform) {
+void SpawnParticles(Mat4f cameraTransform, Vec3f& past_x_one) {
 	Mat4f WorldMatrix = cameraTransform.inverse() * getModelViewMatrix();
 	GLfloat* fWorldMatrix = new GLfloat[16];
 	WorldMatrix.getGLMatrix(fWorldMatrix);
 	Vec4f WorldPoint(fWorldMatrix[12], fWorldMatrix[13], fWorldMatrix[14], fWorldMatrix[15]);
-	GLfloat* glWorldMatrix = new GLfloat [16];
+	GLfloat* glWorldMatrix = new GLfloat[16];
 	ParticleSystem* ps = ModelerApplication::Instance()->GetParticleSystem();
 	WorldMatrix.inverse().getGLMatrix(glWorldMatrix);
 	glMultMatrixf(glWorldMatrix);
@@ -62,12 +62,20 @@ void SpawnParticles(Mat4f cameraTransform) {
 	int b = rand() % 20 - 10;
 	int c = rand() % 20 - 10;
 	int d = rand() % 20 - 10;
-	ps->addParticle(Vec3f(WorldPoint[0], WorldPoint[1], WorldPoint[2]), Vec3f(a, WorldPoint[1] - 4.8, b), Vec3f(c, -9.81, d), 1);
+	Vec3f p = Vec3f(WorldPoint[0], WorldPoint[1], WorldPoint[2]);
+	Vec3f x_one = Vec3f(WorldPoint[0]-1, WorldPoint[1], WorldPoint[2]);
+	if (ps->ParticleArraySize() < 100) {
+		ps->addParticle(p, Vec3f(a, WorldPoint[1] - 4.8, b), Vec3f(c, -9.81, d), 1);
+	}
 	delete[] glWorldMatrix;
 	delete[] fWorldMatrix;
 	float t = ModelerApplication::Instance()->GetTime();
-	ps->computeForcesAndUpdateParticles(t, Vec3f(WorldPoint[0] - 1, WorldPoint[1], WorldPoint[2]));
+	if (t < 0.1) {
+		past_x_one = x_one;
+	}
+	ps->computeForcesAndUpdateParticles(t, x_one, past_x_one);
 	ps->drawParticles(t);
+	past_x_one = x_one;
 }
 
 void drawLsystem(int depth)
@@ -283,6 +291,12 @@ void SampleModel::draw()
 	glPushMatrix();
 		glTranslated(VAL(XPOS), VAL(YPOS), VAL(ZPOS));
 
+		glPushMatrix();
+		glTranslated(0,5,-2);
+		ParticleSystem* cloth = ModelerApplication::Instance()->GetParticleSystemCloth();
+
+		glPopMatrix();
+
 		if (VAL(LOD) >= 1)
 		{
 			// Torso
@@ -368,7 +382,7 @@ void SampleModel::draw()
 								glScaled(1, 1, 1);
 								drawSphere(0.2);
 								glPushMatrix();
-								SpawnParticles(CameraMatrix);
+								SpawnParticles(CameraMatrix, old_x_one);
 								glPopMatrix();
 							}
 						}
@@ -627,7 +641,7 @@ void SampleModel::draw()
 	//*** DON'T FORGET TO PUT THIS IN YOUR OWN CODE **/
 	endDraw();
 }
-
+Vec3f old_x_one;
 int main()
 {
 	// Initialize the controls
@@ -661,6 +675,8 @@ int main()
 
 	ParticleSystem *ps = new ParticleSystem();
 	ModelerApplication::Instance()->SetParticleSystem(ps);
+	ParticleSystem *cloth = new ParticleSystem(true);
+	ModelerApplication::Instance()->SetParticleSystemCloth(cloth);
     ModelerApplication::Instance()->Init(&createSampleModel, controls, NUMCONTROLS);
     return ModelerApplication::Instance()->Run();
 }

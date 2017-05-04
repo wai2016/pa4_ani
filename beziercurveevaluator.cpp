@@ -2,6 +2,7 @@
 #include <assert.h>
 #include "mat.h"
 
+
 void BezierCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts,
 	std::vector<Point>& ptvEvaluatedCurvePts,
 	const float& fAniLength,
@@ -77,7 +78,7 @@ void BezierCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts,
 	// bezier curve
 	for (int i = 0; i < (iCtrlPtCount - 1) / 3; ++i)
 	{
-		displayBezier(ptvCtrlPts[i * 3 + 0], ptvCtrlPts[i * 3 + 1], ptvCtrlPts[i * 3 + 2], ptvCtrlPts[i * 3 + 3], ptvEvaluatedCurvePts);
+		displayBezierSmart(ptvCtrlPts[i * 3 + 0], ptvCtrlPts[i * 3 + 1], ptvCtrlPts[i * 3 + 2], ptvCtrlPts[i * 3 + 3], ptvEvaluatedCurvePts);
 	}
 
 	if (!(bWrap && left == 3))
@@ -103,5 +104,76 @@ void BezierCurveEvaluator::displayBezier(const Point c1, const Point c2, const P
 		ptvEvaluatedCurvePts.push_back(Point(ans[0][0], ans[0][1]));
 	}
 	ptvEvaluatedCurvePts.push_back(c4); // last point, repeated?
+}
+
+float dist(const Point c1, const Point c2)
+{
+	float detlaX = c1.x - c2.x;
+	float detlaY = c1.y - c2.y;
+	return (sqrt(detlaX * detlaX + detlaY * detlaY));
+}
+
+bool flatEnough(const Point c1, const Point c2, const Point c3, const Point c4)
+{
+	if ((dist(c1, c2) + dist(c2, c3) + dist(c3, c4)) / dist(c1, c4) < 1 + CurveEvaluator::s_fFlatnessEpsilon)
+	{
+		return true;
+	}
+	return false;
+}
+
+Point midPt(const Point c1, const Point c2)
+{
+	// midpoint theorem
+	float mX = (c1.x + c2.x) / 2;
+	float mY = (c1.y + c2.y) / 2;
+	return Point(mX, mY);
+}
+
+void subDivide(const Point c1, const Point c2, const Point c3, const Point c4, std::vector<Point>& l, std::vector<Point>& r)
+{
+	l.clear();
+	r.clear();
+
+	Point l2 = midPt(c1, c2);
+	Point extra = midPt(c2, c3);
+	Point r3 = midPt(c3, c4);
+	Point l3 = midPt(l2, extra);
+	Point r2 = midPt(extra, r3);
+	Point q = midPt(l3, r2);
+
+	l.push_back(c1);
+	l.push_back(l2);
+	l.push_back(l3);
+	l.push_back(q);
+	r.push_back(q);
+	r.push_back(r2);
+	r.push_back(r3);
+	r.push_back(c4);
+}
+
+void adaptive(const Point c1, const Point c2, const Point c3, const Point c4, std::vector<Point>& ptvEvaluatedCurvePts) 
+{
+	if (flatEnough(c1, c2, c3, c4))
+	{
+		ptvEvaluatedCurvePts.push_back(c1);
+		ptvEvaluatedCurvePts.push_back(c4);
+		return;
+	}
+	else
+	{
+		std::vector<Point> l;
+		std::vector<Point> r;
+		subDivide(c1, c2, c3, c4, l, r);
+		adaptive(l[0], l[1], l[2], l[3], ptvEvaluatedCurvePts);
+		adaptive(r[0], r[1], r[2], r[3], ptvEvaluatedCurvePts);
+	}
+}
+
+void BezierCurveEvaluator::displayBezierSmart(const Point c1, const Point c2, const Point c3, const Point c4, std::vector<Point>& ptvEvaluatedCurvePts) const
+{
+	//std::vector<Point> l;
+	//std::vector<Point> r;
+	adaptive(c1, c2, c3, c4, ptvEvaluatedCurvePts);
 }
 

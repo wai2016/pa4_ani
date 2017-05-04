@@ -56,6 +56,9 @@ public:
 	ParticleSystem *GetParticleSystem();
 	void SetParticleSystem(ParticleSystem *s);
 
+	ParticleSystem *GetParticleSystemCloth();
+	void SetParticleSystemCloth(ParticleSystem *s);
+
 	// Return the current time
 	float GetTime();
 
@@ -85,6 +88,7 @@ private:
 
 	// Particle System variables
 	ParticleSystem *ps;
+	ParticleSystem *cloth;
 };
 
 #endif

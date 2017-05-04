@@ -16,6 +16,8 @@
 #include "mat.h"
 #include "vec.h"
 
+#include "bitmap.h"
+
 using namespace std;
 
 
@@ -123,6 +125,30 @@ void drawLsystem(int depth)
 	return;
 }
 
+GLuint LoadTex(const char* filename)
+{
+	int width, height;
+	unsigned char* image;
+
+	image = readBMP(filename, width, height);
+
+	GLuint tex;
+	glGenTextures(1, &tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+	delete image;
+
+	return tex;
+}
+
 
 // We are going to override (is that the right word?) the draw()
 // method of ModelerView to draw out SampleModel
@@ -154,6 +180,89 @@ void SampleModel::draw()
 	RLLR = VAL(RLLROTATE);
 	LFR = VAL(LFROTATE);
 	RFR = VAL(RFROTATE);
+
+	// ----------------------------------------------------------skybox--------------------------------------------------------------
+	GLuint _skybox[6]; //the array for our texture
+	
+	_skybox[0] = LoadTex("cliffFront.bmp");
+	_skybox[1] = LoadTex("cliffLeft.bmp");
+	_skybox[2] = LoadTex("cliffBack.bmp");
+	_skybox[3] = LoadTex("cliffRight.bmp");
+	_skybox[4] = LoadTex("cliffTop.bmp");
+	_skybox[5] = LoadTex("cliffBottom.bmp");
+
+	// Store the current matrix
+	glPushMatrix();
+
+	// Enable/Disable features
+	glPushAttrib(GL_ENABLE_BIT);
+	glEnable(GL_TEXTURE_2D);
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_LIGHTING);
+	glDisable(GL_BLEND);
+
+	// Just in case we set all vertices to white.
+	glColor4f(1, 1, 1, 1);
+
+	// Render the front quad
+	glBindTexture(GL_TEXTURE_2D, _skybox[0]);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 0); glVertex3f(20.0f, -20.0f, -20.0f);
+	glTexCoord2f(1, 0); glVertex3f(-20.0f, -20.0f, -20.0f);
+	glTexCoord2f(1, 1); glVertex3f(-20.0f, 20.0f, -20.0f);
+	glTexCoord2f(0, 1); glVertex3f(20.0f, 20.0f, -20.0f);
+	glEnd();
+
+	// Render the left quad
+	glBindTexture(GL_TEXTURE_2D, _skybox[1]);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 0); glVertex3f(20.0f, -20.0f, 20.0f);
+	glTexCoord2f(1, 0); glVertex3f(20.0f, -20.0f, -20.0f);
+	glTexCoord2f(1, 1); glVertex3f(20.0f, 20.0f, -20.0f);
+	glTexCoord2f(0, 1); glVertex3f(20.0f, 20.0f, 20.0f);
+	glEnd();
+
+	// Render the back quad
+	glBindTexture(GL_TEXTURE_2D, _skybox[2]);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 0); glVertex3f(-20.0f, -20.0f, 20.0f);
+	glTexCoord2f(1, 0); glVertex3f(20.0f, -20.0f, 20.0f);
+	glTexCoord2f(1, 1); glVertex3f(20.0f, 20.0f, 20.0f);
+	glTexCoord2f(0, 1); glVertex3f(-20.0f, 20.0f, 20.0f);
+
+	glEnd();
+
+	// Render the right quad
+	glBindTexture(GL_TEXTURE_2D, _skybox[3]);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 0); glVertex3f(-20.0f, -20.0f, -20.0f);
+	glTexCoord2f(1, 0); glVertex3f(-20.0f, -20.0f, 20.0f);
+	glTexCoord2f(1, 1); glVertex3f(-20.0f, 20.0f, 20.0f);
+	glTexCoord2f(0, 1); glVertex3f(-20.0f, 20.0f, -20.0f);
+	glEnd();
+
+	// Render the top quad
+	glBindTexture(GL_TEXTURE_2D, _skybox[4]);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 1); glVertex3f(-20.0f, 20.0f, -20.0f);
+	glTexCoord2f(0, 0); glVertex3f(-20.0f, 20.0f, 20.0f);
+	glTexCoord2f(1, 0); glVertex3f(20.0f, 20.0f, 20.0f);
+	glTexCoord2f(1, 1); glVertex3f(20.0f, 20.0f, -20.0f);
+	glEnd();
+
+	// Render the bottom quad
+	glBindTexture(GL_TEXTURE_2D, _skybox[5]);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 0); glVertex3f(-20.0f, -20.0f, -20.0f);
+	glTexCoord2f(0, 1); glVertex3f(-20.0f, -20.0f, 20.0f);
+	glTexCoord2f(1, 1); glVertex3f(20.0f, -20.0f, 20.0f);
+	glTexCoord2f(1, 0); glVertex3f(20.0f, -20.0f, -20.0f);
+	glEnd();
+
+	// Restore enable bits and matrix
+	glPopAttrib();
+	glPopMatrix();
+
 
 	// draw the floor
 	setAmbientColor(.1f,.1f,.1f);

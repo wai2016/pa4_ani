@@ -4,6 +4,10 @@
 #include <cstdio>
 #include <math.h>
 
+#include "Point.h"
+#include "bsplinecurveevaluator.h"
+#include <algorithm> 
+
 // ********************************************************
 // Support functions from previous version of modeler
 // ********************************************************
@@ -466,7 +470,39 @@ void drawTorus(double or, double ir)
 	}
 }
 
+void drawSurface(const std::vector< std::vector<Point> >& ptvCtrlPts)
+{
+	ModelerDrawState *mds = ModelerDrawState::Instance();
 
+	_setupOpenGl();
+
+	if (mds->m_rayFile)
+	{
+		_dump_current_modelview();
+		_dump_current_material();
+	}
+	else
+	{
+		int size = ptvCtrlPts.size();
+		BsplineCurveEvaluator bspline;
+		std::vector<Point> line;
+		std::vector< std::vector<Point> > ptvEvaluatedCurvePts(4, line);
+
+		for (int i = 0; i < size; i++)
+		{
+			int i_size = ptvCtrlPts[i].size();
+			bspline.evaluateCurve(ptvCtrlPts[i], ptvEvaluatedCurvePts[i], sqrt((ptvCtrlPts[i][0].x - ptvCtrlPts[i][i_size - 1].x) * (ptvCtrlPts[i][0].x - ptvCtrlPts[i][i_size - 1].x) + (ptvCtrlPts[i][0].y - ptvCtrlPts[i][i_size - 1].y) * (ptvCtrlPts[i][0].y - ptvCtrlPts[i][i_size - 1].y)), false);
+
+			std::sort(ptvEvaluatedCurvePts[i].begin(), ptvEvaluatedCurvePts[i].end(), PointSmallerXCompare());
+
+			glBegin(GL_LINE_STRIP);
+			for (std::vector<Point>::const_iterator it = ptvEvaluatedCurvePts[i].begin(); it != ptvEvaluatedCurvePts[i].end(); ++it) {
+				glVertex3f(it->x, it->y, i);
+			}
+			glEnd();
+		}
+	}
+}
 
 
 

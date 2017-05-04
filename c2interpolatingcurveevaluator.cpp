@@ -133,14 +133,14 @@ std::vector<float> calculateD(const std::vector<float>& ptvCtrlPts, const bool& 
 
 	std::vector<float> line(iCtrlPtCount + 1, 0);
 	std::vector< std::vector<float> > A(iCtrlPtCount, line);
-
+	/*
 	// initialise all to be 0
 	for (int i = 0; i<iCtrlPtCount; i++) {
 		for (int j = 0; j<iCtrlPtCount + 1; j++) {
 			A[i][j] = 0;
 		}
 	}
-
+	*/
 	// set endpoints
 	if (bWrap)
 	{

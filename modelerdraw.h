@@ -10,6 +10,8 @@
 
 #include "modelerglobals.h"
 
+#include <vector>
+#include "point.h"
 
 enum DrawModeSetting_t 
 { NONE=0, NORMAL, WIREFRAME, FLATSHADE, };
@@ -95,5 +97,7 @@ void drawTriangle( double x1, double y1, double z1,
 			       double x3, double y3, double z3 );
 
 void drawTorus(double or, double ir);
+
+void drawSurface(const std::vector< std::vector<Point> >& ptvCtrlPts);
 
 #endif

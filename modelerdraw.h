@@ -98,6 +98,6 @@ void drawTriangle( double x1, double y1, double z1,
 
 void drawTorus(double or, double ir);
 
-void drawSurface(const std::vector< std::vector<Point> >& ptvCtrlPts);
+void drawSurface(const std::vector< std::vector<Point> >& ptvCtrlPts, const float z1, const float z2);
 
 #endif

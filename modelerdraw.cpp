@@ -470,7 +470,7 @@ void drawTorus(double or, double ir)
 	}
 }
 
-void drawSurface(const std::vector< std::vector<Point> >& ptvCtrlPts)
+void drawSurface(const std::vector< std::vector<Point> >& ptvCtrlPts, const float z1, const float z2)
 {
 	ModelerDrawState *mds = ModelerDrawState::Instance();
 
@@ -483,10 +483,10 @@ void drawSurface(const std::vector< std::vector<Point> >& ptvCtrlPts)
 	}
 	else
 	{
-		int size = ptvCtrlPts.size();
 		BsplineCurveEvaluator bspline;
+		int size = ptvCtrlPts.size();
 		std::vector<Point> line;
-		std::vector< std::vector<Point> > ptvEvaluatedCurvePts(4, line);
+		std::vector< std::vector<Point> > ptvEvaluatedCurvePts(size, line);
 
 		for (int i = 0; i < size; i++)
 		{
@@ -495,12 +495,47 @@ void drawSurface(const std::vector< std::vector<Point> >& ptvCtrlPts)
 
 			std::sort(ptvEvaluatedCurvePts[i].begin(), ptvEvaluatedCurvePts[i].end(), PointSmallerXCompare());
 
+		}
+
+		std::vector<Point> line2;
+		std::vector< std::vector<Point> > ptvCtrlPts2;
+
+		for (int j = 0; j < ptvEvaluatedCurvePts[0].size(); j++) // all size should be the same
+		{
+			line2.push_back(Point(0, ptvEvaluatedCurvePts[0][j].y));
+			line2.push_back(Point(z1, ptvEvaluatedCurvePts[1][j].y));
+			line2.push_back(Point(z2, ptvEvaluatedCurvePts[2][j].y));
+			line2.push_back(Point(1, ptvEvaluatedCurvePts[3][j].y));
+			ptvCtrlPts2.push_back(line2);
+			line2.clear();
+		}
+
+		//std::cout << ptvCtrlPts2.size() << std::endl;
+		//for (int i = 0; i <ptvCtrlPts2.size(); i++) // all size should be the same
+		//{
+		//	std::cout << ptvCtrlPts2[i].size() << std::endl;
+		//}
+
+		int size2 = ptvCtrlPts2.size();
+		std::vector<Point> line3;
+		std::vector< std::vector<Point> > ptvEvaluatedCurvePts2(size2, line3);
+
+		for (int i = 0; i < size2; i++)
+		{
+			int i_size = ptvCtrlPts2[i].size();
+			bspline.evaluateCurve(ptvCtrlPts2[i], ptvEvaluatedCurvePts2[i], sqrt((ptvCtrlPts2[i][0].x - ptvCtrlPts2[i][i_size - 1].x) * (ptvCtrlPts2[i][0].x - ptvCtrlPts2[i][i_size - 1].x) + (ptvCtrlPts2[i][0].y - ptvCtrlPts2[i][i_size - 1].y) * (ptvCtrlPts2[i][0].y - ptvCtrlPts2[i][i_size - 1].y)), false);
+
+			std::sort(ptvEvaluatedCurvePts2[i].begin(), ptvEvaluatedCurvePts2[i].end(), PointSmallerXCompare());
+
 			glBegin(GL_LINE_STRIP);
-			for (std::vector<Point>::const_iterator it = ptvEvaluatedCurvePts[i].begin(); it != ptvEvaluatedCurvePts[i].end(); ++it) {
-				glVertex3f(it->x, it->y, i);
+			for (std::vector<Point>::const_iterator it = ptvEvaluatedCurvePts2[i].begin(); it != ptvEvaluatedCurvePts2[i].end(); ++it) {
+				glVertex3f(float(i) / float(size2), it->y, it->x);
 			}
 			glEnd();
 		}
+
+		std::cout << size2 << std::endl;
+		std::cout << ptvEvaluatedCurvePts2[0].size() << std::endl;
 	}
 }
 

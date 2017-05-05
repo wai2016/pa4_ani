@@ -190,6 +190,16 @@ void SampleModel::draw()
 	LFR = VAL(LFROTATE);
 	RFR = VAL(RFROTATE);
 
+	float y1, y2, y3, y4, z1, z2;
+	//x1 = VAL(X1);
+	//x2 = VAL(X2);
+	y1 = VAL(Y1);
+	y2 = VAL(Y2);
+	y3 = VAL(Y3);
+	y4 = VAL(Y4);
+	z1 = VAL(Z1);
+	z2 = VAL(Z2);
+
 	// ----------------------------------------------------------skybox--------------------------------------------------------------
 	GLuint _skybox[6]; //the array for our texture
 	
@@ -284,36 +294,24 @@ void SampleModel::draw()
 
 	// draw surface
 	glPushMatrix();
-	glTranslated(0, 0, 5);
+	glTranslated(2, 0.5, 2);
+	glScalef(5.0,5.0,5.0);
 	std::vector<Point> line(4, Point(0,0));
 	std::vector< std::vector<Point> > ptvCtrlPts(4, line);
 	for (int i = 0; i < 4; i++)
 	{
 		for (int j = 0; j < 4; j++)
 		{
-			ptvCtrlPts[i][j].x = j;
+			ptvCtrlPts[i][j].x = float(j) / float(3);
 		}
-		ptvCtrlPts[i][1].y = 2;
-		ptvCtrlPts[i][2].y = 2;
 	}
-	drawSurface(ptvCtrlPts);
-	glPopMatrix();
+	
+	ptvCtrlPts[1][1].y = y1;
+	ptvCtrlPts[1][2].y = y2;
+	ptvCtrlPts[2][1].y = y3;
+	ptvCtrlPts[2][2].y = y4;
 
-	// draw surface
-	glPushMatrix();
-	glTranslated(0, 0, 5);
-	std::vector<Point> line(4, Point(0,0));
-	std::vector< std::vector<Point> > ptvCtrlPts(4, line);
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			ptvCtrlPts[i][j].x = j;
-		}
-		ptvCtrlPts[i][1].y = 2;
-		ptvCtrlPts[i][2].y = 2;
-	}
-	drawSurface(ptvCtrlPts);
+	drawSurface(ptvCtrlPts, z1, z2);
 	glPopMatrix();
 
 	// draw the sample model
@@ -712,6 +710,14 @@ int main()
 	controls[ZLIGHT] = ModelerControl("Z Position of Light", -5, 5, 0.10f, 0);
 	controls[LDEPTH] = ModelerControl("Depth of L-system", 0, 6, 1, 0);
 	controls[LANGLE] = ModelerControl("Angle of L-system", 0, 359, 1, 60);
+	//controls[X1] = ModelerControl("X1", 0, 1, 0.001, 0.333);
+	//controls[X2] = ModelerControl("X2", 0, 1, 0.001, 0.666);
+	controls[Y1] = ModelerControl("Y1", 0, 1, 0.001, 1);
+	controls[Y2] = ModelerControl("Y2", 0, 1, 0.001, 1);
+	controls[Y3] = ModelerControl("Y3", 0, 1, 0.001, 1);
+	controls[Y4] = ModelerControl("Y4", 0, 1, 0.001, 1);
+	controls[Z1] = ModelerControl("Z1", 0, 1, 0.001, 0.333);
+	controls[Z2] = ModelerControl("Z2", 0, 1, 0.001, 0.666);
 
 	ParticleSystem *ps = new ParticleSystem(false);
 	ModelerApplication::Instance()->SetParticleSystem(ps);

@@ -92,7 +92,7 @@ void BezierCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts,
 void BezierCurveEvaluator::displayBezier(const Point c1, const Point c2, const Point c3, const Point c4, std::vector<Point>& ptvEvaluatedCurvePts) const
 {
 	Mat4f base(-1, 3, -3, 1, 3, -6, 3, 0, -3, 3, 0, 0, 1, 0, 0, 0);
-	float interval = 0.001;
+	float interval = 0.05;
 	Mat4f points(c1.x, c1.y, 0, 0,c2.x, c2.y, 0, 0, c3.x, c3.y, 0, 0, c4.x, c4.y, 0, 0);
 	Mat4f baseXpoints = base * points;
 	Mat4f poly, ans;

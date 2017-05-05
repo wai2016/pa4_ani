@@ -299,6 +299,23 @@ void SampleModel::draw()
 	drawSurface(ptvCtrlPts);
 	glPopMatrix();
 
+	// draw surface
+	glPushMatrix();
+	glTranslated(0, 0, 5);
+	std::vector<Point> line(4, Point(0,0));
+	std::vector< std::vector<Point> > ptvCtrlPts(4, line);
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			ptvCtrlPts[i][j].x = j;
+		}
+		ptvCtrlPts[i][1].y = 2;
+		ptvCtrlPts[i][2].y = 2;
+	}
+	drawSurface(ptvCtrlPts);
+	glPopMatrix();
+
 	// draw the sample model
 	setAmbientColor(.1f,.1f,.1f);
 	setDiffuseColor(COLOR_GREEN);

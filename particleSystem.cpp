@@ -311,18 +311,18 @@ void ParticleSystem::computeForcesAndUpdateClothParticles(float t, Vec3f current
 			ParticleArray[0].velocity = Vec3f(-1, -1, 0);
 			ParticleArray[820].velocity = Vec3f(1, -1, 0);
 		}*/
-		if (t > 2 && t < 3) {
-			ParticleArray[0].velocity = Vec3f(-2, -1, 0);
-			ParticleArray[820].velocity = Vec3f(2, -1, 0);
-		}
-		if (t > 7 && t < 8) {
-			for (int q = 0; q < 21; q++) {
-				ParticleArray[41 * q].velocity = Vec3f((41 * q - 451) / 902.0, -1, -1);
-			}
-		}
+		//if (t > 2 && t < 3) {
+		//	ParticleArray[0].velocity = Vec3f(-2, -1, 0);
+		//	ParticleArray[820].velocity = Vec3f(2, -1, 0);
+		//}
+		//if (t > 7 && t < 8) {
+		//	for (int q = 0; q < 21; q++) {
+		//		ParticleArray[41 * q].velocity = Vec3f((41 * q - 451) / 902.0, -1, -1);
+		//	}
+		//}
 		if (!((cloth_position - current_position).iszero())) {
-			for (int r = 0; r < 841; r++) {
-				ParticleArray[r].velocity = (cloth_position - current_position);
+			for (int q = 0; q < 21; q++) {
+				ParticleArray[41 * q].velocity = (cloth_position - current_position);
 			}
 			cloth_position = current_position;
 		}

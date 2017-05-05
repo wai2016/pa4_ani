@@ -292,10 +292,14 @@ void SampleModel::draw()
 		glTranslated(VAL(XPOS), VAL(YPOS), VAL(ZPOS));
 
 		glPushMatrix();
-		glTranslated(0,5,-2);
+		glTranslated(-1, 2.8, -0.6);
 		ParticleSystem* cloth = ModelerApplication::Instance()->GetParticleSystemCloth();
-
+		float time = ModelerApplication::Instance()->GetTime();
+		cloth->computeForcesAndUpdateClothParticles(time);
+		cloth->drawClothParticles(time);
 		glPopMatrix();
+		setAmbientColor(.1f, .1f, .1f);
+		setDiffuseColor(COLOR_GREEN);
 
 		if (VAL(LOD) >= 1)
 		{
@@ -673,7 +677,7 @@ int main()
 	controls[LDEPTH] = ModelerControl("Depth of L-system", 0, 6, 1, 0);
 	controls[LANGLE] = ModelerControl("Angle of L-system", 0, 359, 1, 60);
 
-	ParticleSystem *ps = new ParticleSystem();
+	ParticleSystem *ps = new ParticleSystem(false);
 	ModelerApplication::Instance()->SetParticleSystem(ps);
 	ParticleSystem *cloth = new ParticleSystem(true);
 	ModelerApplication::Instance()->SetParticleSystemCloth(cloth);

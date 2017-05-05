@@ -42,6 +42,9 @@ public:
 	void redrawModelerView();
     void autoLoadNPlay();
 
+	double	tension();
+	void	tension(double t);
+
 protected:
 
 	Fl_Box* labelBox(int nBox);
@@ -63,6 +66,8 @@ private:
 	float m_fPlayStartTime, m_fPlayEndTime;
 	std::string m_strMovieFileName;
 	int m_iMovieFrameNum;
+
+	double m_tension;
 
 	inline void cb_openAniScript_i(Fl_Menu_*, void*);
 	static void cb_openAniScript(Fl_Menu_*, void*);
@@ -138,6 +143,9 @@ private:
 	inline void cb_loop_i(Fl_Light_Button*, void*);
 	static void cb_loop(Fl_Light_Button*, void*);
 	static void cb_timed(void *); // timed callback for animation
+
+	inline void cb_tensionSlides_i(Fl_Widget* o, void* v);
+	static void cb_tensionSlides(Fl_Widget* o, void* v);
 };
 
 #endif

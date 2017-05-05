@@ -74,5 +74,7 @@ public:
   Fl_Button *m_pbtRemoveAllCamKeyFrames;
   Fl_Window *m_pwndModelerWnd;
   ModelerView *m_pwndModelerView;
+
+  Fl_Slider*			m_tensionSlider;
 };
 #endif

@@ -3,13 +3,17 @@
 #include "beziercurveevaluator.h"
 #include <assert.h>
 
+#include "modelerui.h"
+#include "modelerapp.h"
+
 void CatmullRomCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts,
 	std::vector<Point>& ptvEvaluatedCurvePts,
 	const float& fAniLength,
 	const bool& bWrap) const
-{
+{ 
+	ModelerUI *ui = ModelerApplication::Instance()->GetUI();
 	int iCtrlPtCount = ptvCtrlPts.size();
-	float tension = 1.0 / 2.0;
+	float tension = ui->tension();
 
 	ptvEvaluatedCurvePts.clear(); // redraw, global control
 

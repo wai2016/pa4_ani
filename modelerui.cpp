@@ -581,6 +581,18 @@ void ModelerUI::cb_timed(void *p)
 	Fl::repeat_timeout(dt, cb_timed, (void *)pui);
 }
 
+void ModelerUI::cb_tensionSlides_i(Fl_Widget* o, void* v)
+{
+	tension(m_tensionSlider->value());
+	m_pwndGraphWidget->currCurveType(m_pchoCurveType->value());
+	m_pwndGraphWidget->redraw();
+}
+
+void ModelerUI::cb_tensionSlides(Fl_Widget* o, void* v)
+{
+	((ModelerUI*)(o->user_data()))->cb_tensionSlides_i(o, v);
+}
+
 Fl_Box* ModelerUI::labelBox(int nBox) 
 {
   return (Fl_Box*)m_ppckPack->child(nBox * 2);
@@ -867,12 +879,23 @@ void ModelerUI::fps(const int iFps)
 	m_iFps = iFps;
 }
 
+double ModelerUI::tension()
+{
+	return m_tension;
+}
+
+void ModelerUI::tension(const double t)
+{
+	m_tension = t;
+}
+
 ModelerUI::ModelerUI() : 
 m_iCurrControlCount(0), 
 m_pcbfValueChangedCallback(NULL),
 m_iFps(30),
 m_bAnimating(false),
-m_bSaveMovie(false)
+m_bSaveMovie(false),
+m_tension(0.5)
 {
 	// setup all the callback functions...
 	m_pmiOpenAniScript->callback((Fl_Callback*)cb_openAniScript);
@@ -908,6 +931,8 @@ m_bSaveMovie(false)
 	m_pbtLoop->callback((Fl_Callback*)cb_loop);
 	m_pbtSimulate->callback((Fl_Callback*)cb_simulate);
 	m_psldrFPS->callback((Fl_Callback*)cb_fps);
+	m_tensionSlider->value(m_tension);
+	m_tensionSlider->callback(cb_tensionSlides);
 
 	m_pwndMainWnd->callback((Fl_Callback*)cb_hide);
 	m_pwndMainWnd->when(FL_HIDE);
@@ -917,6 +942,7 @@ m_bSaveMovie(false)
 	m_poutPlayEnd->value("20.00");
 
 	endTime(20.0f);
+
 }
 
 void ModelerUI::show() 

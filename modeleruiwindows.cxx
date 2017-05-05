@@ -84,7 +84,7 @@ ModelerUIWindows::ModelerUIWindows() {
         o->end();
         Fl_Group::current()->resizable(o);
       }
-      { Fl_Group* o = m_pgrpCurveGroup = new Fl_Group(160, 55, 425, 435, "Curves");
+      { Fl_Group* o = m_pgrpCurveGroup = new Fl_Group(160, 55, 425, 475, "Curves"); // have change the size when add new control
         o->labelsize(12);
         { Fl_Group* o = new Fl_Group(160, 55, 420, 410);
           { Fl_Box* o = new Fl_Box(160, 55, 40, 20, "Useless Box");
@@ -109,7 +109,7 @@ ModelerUIWindows::ModelerUIWindows() {
           o->end();
           Fl_Group::current()->resizable(o);
         }
-        { Fl_Group* o = new Fl_Group(160, 470, 420, 20);
+        { Fl_Group* o = new Fl_Group(160, 470, 420, 50); // have change the size when add new control
           { Fl_Box* o = new Fl_Box(160, 470, 75, 20, "Curve Type:");
             o->labelsize(12);
             o->align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);
@@ -129,6 +129,18 @@ ModelerUIWindows::ModelerUIWindows() {
             o->labelsize(12);
             o->user_data((void*)(this));
           }
+		  {
+			  m_tensionSlider = new Fl_Value_Slider(230, 500, 180, 20, "CR Tension");
+			  m_tensionSlider->user_data((void*)(this));	// record self to be used by static callback functions
+			  m_tensionSlider->type(FL_HOR_NICE_SLIDER);
+			  m_tensionSlider->labelfont(FL_COURIER);
+			  m_tensionSlider->labelsize(12);
+			  m_tensionSlider->minimum(0);
+			  m_tensionSlider->maximum(1);
+			  m_tensionSlider->step(0.1);
+			  m_tensionSlider->align(FL_ALIGN_RIGHT);
+			  Fl_Group::current()->resizable(m_tensionSlider);
+		  }
           o->end();
         }
         o->end();

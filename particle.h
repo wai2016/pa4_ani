@@ -14,6 +14,7 @@ public:
 	Vec3f velocity;
 	Vec3f force;
 	float mass;
+	Vec3f start_position;
 };
 
 #endif

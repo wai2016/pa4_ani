@@ -178,14 +178,16 @@ void ModelerApplication::ValueChangedCallback()
 	float playEndTime = m_ui->playEndTime();
 
 	ParticleSystem *ps = m_app->GetParticleSystem();
+	ParticleSystem *cloth = m_app->GetParticleSystemCloth();
 	
-	if (ps != NULL) {
+	if (ps != NULL && cloth != NULL) {
 		bool simulating = ps->isSimulate();
 
 		// stop simulation if we're at endTime
 		double TIME_EPSILON = 0.05;
 		if (simulating && (currTime >= (playEndTime - TIME_EPSILON))) {
 			ps->stopSimulation(currTime); 
+			cloth->stopSimulation(currTime);
 		} 
 
 		// check to see if we're simulating still
@@ -200,11 +202,14 @@ void ModelerApplication::ValueChangedCallback()
 			// to the ui
 			else if (m_ui->simulate()) {
 				ps->startSimulation(currTime);
+				cloth->startSimulation(currTime);
 			} else {
 				ps->stopSimulation(currTime);
+				cloth->stopSimulation(currTime);
 			}
 		}
 		ps->setDirty(false);
+		cloth->setDirty(false);
 	}
 
 	// update camera position

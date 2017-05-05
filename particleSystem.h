@@ -28,8 +28,7 @@ public:
 
 
 	/** Constructor **/
-	ParticleSystem();
-	ParticleSystem(bool cloth);
+	ParticleSystem(bool c);
 
 	/** Destructor **/
 	virtual ~ParticleSystem();
@@ -74,6 +73,8 @@ public:
 	void setDirty(bool d) { dirty = d; }
 
 	void addParticle(Vec3f p, Vec3f v, Vec3f f, float m);
+	void drawClothParticles(float t);
+	void computeForcesAndUpdateClothParticles(float t);
 	int ParticleArraySize();
 
 
@@ -92,6 +93,8 @@ protected:
 	/** General state variables **/
 	bool simulate;						// flag for simulation mode
 	bool dirty;							// flag for updating ui (don't worry about this)
+
+	bool cloth;
 
 	std::vector <Particle> ParticleArray;
 

@@ -24,6 +24,7 @@ ParticleSystem::ParticleSystem(bool c)
 	cloth = c;
 	if (cloth) {
 		int a = 0;
+		cloth_position = Vec3f(0,0,0);
 		for (int i = 0; i < 41; i++) {
 			if (a % 2 == 0) {
 				for (int j = 0; j < 21; j++) {
@@ -66,6 +67,7 @@ void ParticleSystem::startSimulation(float t)
 	ParticleArray.clear();
 	if (cloth) {
 		int a = 0;
+		cloth_position = Vec3f(0, 0, 0);
 		for (int i = 0; i < 41; i++) {
 			if (a % 2 == 0) {
 				for (int j = 0; j < 21; j++) {
@@ -299,7 +301,7 @@ void ParticleSystem::drawClothParticles(float t)
 	}
 }
 
-void ParticleSystem::computeForcesAndUpdateClothParticles(float t)
+void ParticleSystem::computeForcesAndUpdateClothParticles(float t, Vec3f current_position)
 {
 	if (simulate) {
 		if (BakeArray.count(round(t * 30)) > 0) {
@@ -310,13 +312,19 @@ void ParticleSystem::computeForcesAndUpdateClothParticles(float t)
 			ParticleArray[820].velocity = Vec3f(1, -1, 0);
 		}*/
 		if (t > 2 && t < 3) {
-			ParticleArray[0].velocity = Vec3f(-1, -0.5, 0);
-			ParticleArray[820].velocity = Vec3f(1, -0.5, 0);
+			ParticleArray[0].velocity = Vec3f(-2, -1, 0);
+			ParticleArray[820].velocity = Vec3f(2, -1, 0);
 		}
 		if (t > 7 && t < 8) {
 			for (int q = 0; q < 21; q++) {
-				ParticleArray[41 * q].velocity = Vec3f((41 * q - 451) / 902.0, -0.5, -0.5);
+				ParticleArray[41 * q].velocity = Vec3f((41 * q - 451) / 902.0, -1, -1);
 			}
+		}
+		if (!((cloth_position - current_position).iszero())) {
+			for (int r = 0; r < 841; r++) {
+				ParticleArray[r].velocity = (cloth_position - current_position);
+			}
+			cloth_position = current_position;
 		}
 		int a = 0;
 		vector <Particle> NearParticle;
@@ -395,16 +403,16 @@ void ParticleSystem::computeForcesAndUpdateClothParticles(float t)
 							Vec3f delta_x = (NearParticle[l].position - ParticleArray[p].position);
 							Vec3f delta_v = (NearParticle[l].velocity - ParticleArray[p].velocity);
 							float delta_v_Dot_delta_x = delta_x[0] * delta_v[0] + delta_x[1] * delta_v[1] + delta_x[2] * delta_v[2];
-							net_force += (delta_x / delta_x.length()) * (3 * (delta_x.length() - 0.1) + 3 * (delta_v_Dot_delta_x / delta_x.length()));
+							net_force += (delta_x / delta_x.length()) * (5 * (delta_x.length() - 0.1) + 5 * (delta_v_Dot_delta_x / delta_x.length()));
 						}
 						for (int m = 0; m < DiagonalParticle.size(); m++) {
 							Vec3f delta_x = (DiagonalParticle[m].position - ParticleArray[p].position);
 							Vec3f delta_v = (DiagonalParticle[m].velocity - ParticleArray[p].velocity);
 							float delta_v_Dot_delta_x = delta_x[0] * delta_v[0] + delta_x[1] * delta_v[1] + delta_x[2] * delta_v[2];
-							net_force += (delta_x / delta_x.length()) * (3 * (delta_x.length() - 0.0707) + 3 * (delta_v_Dot_delta_x / delta_x.length()));
+							net_force += (delta_x / delta_x.length()) * (5 * (delta_x.length() - 0.0707) + 5 * (delta_v_Dot_delta_x / delta_x.length()));
 						}
 						if ((ParticleArray[p].start_position - ParticleArray[p].position).length() < 1) {
-							net_force += 0.5*(ParticleArray[p].start_position - ParticleArray[p].position);
+							net_force += (ParticleArray[p].start_position - ParticleArray[p].position);
 						}
 						float drag_coeff = 1.0;
 						Vec3f drag_force(drag_coeff * ParticleArray[p].velocity[0], drag_coeff * ParticleArray[p].velocity[1], drag_coeff * ParticleArray[p].velocity[2]);
@@ -436,10 +444,10 @@ void ParticleSystem::computeForcesAndUpdateClothParticles(float t)
 						Vec3f delta_x = (DiagonalParticle[m].position - ParticleArray[p].position);
 						Vec3f delta_v = (DiagonalParticle[m].velocity - ParticleArray[p].velocity);
 						float delta_v_Dot_delta_x = delta_x[0] * delta_v[0] + delta_x[1] * delta_v[1] + delta_x[2] * delta_v[2];
-						net_force += (delta_x / delta_x.length()) * (3 * (delta_x.length() - 0.0707) + 3 * (delta_v_Dot_delta_x / delta_x.length()));
+						net_force += (delta_x / delta_x.length()) * (5 * (delta_x.length() - 0.0707) + 5 * (delta_v_Dot_delta_x / delta_x.length()));
 					}
 					if ((ParticleArray[p].start_position - ParticleArray[p].position).length() < 1) {
-						net_force += 0.5*(ParticleArray[p].start_position - ParticleArray[p].position);
+						net_force += (ParticleArray[p].start_position - ParticleArray[p].position);
 					}
 					float drag_coeff = 1.0;
 					Vec3f drag_force(drag_coeff * ParticleArray[p].velocity[0], drag_coeff * ParticleArray[p].velocity[1], drag_coeff * ParticleArray[p].velocity[2]);

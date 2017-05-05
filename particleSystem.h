@@ -74,7 +74,7 @@ public:
 
 	void addParticle(Vec3f p, Vec3f v, Vec3f f, float m);
 	void drawClothParticles(float t);
-	void computeForcesAndUpdateClothParticles(float t);
+	void computeForcesAndUpdateClothParticles(float t, Vec3f current_position);
 	int ParticleArraySize();
 
 
@@ -95,6 +95,7 @@ protected:
 	bool dirty;							// flag for updating ui (don't worry about this)
 
 	bool cloth;
+	Vec3f cloth_position;
 
 	std::vector <Particle> ParticleArray;
 

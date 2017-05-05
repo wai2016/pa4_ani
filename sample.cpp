@@ -193,9 +193,9 @@ void SampleModel::draw()
 	GLuint _skybox[6]; //the array for our texture
 	
 	_skybox[0] = LoadTex("cliffFront.bmp");
-	_skybox[1] = LoadTex("cliffLeft.bmp");
+	_skybox[1] = LoadTex("cliffRight.bmp");
 	_skybox[2] = LoadTex("cliffBack.bmp");
-	_skybox[3] = LoadTex("cliffRight.bmp");
+	_skybox[3] = LoadTex("cliffLeft.bmp");
 	_skybox[4] = LoadTex("cliffTop.bmp");
 	_skybox[5] = LoadTex("cliffBottom.bmp");
 
@@ -215,63 +215,63 @@ void SampleModel::draw()
 	// Render the front quad
 	glBindTexture(GL_TEXTURE_2D, _skybox[0]);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glVertex3f(20.0f, -20.0f, -20.0f);
-	glTexCoord2f(1, 0); glVertex3f(-20.0f, -20.0f, -20.0f);
-	glTexCoord2f(1, 1); glVertex3f(-20.0f, 20.0f, -20.0f);
-	glTexCoord2f(0, 1); glVertex3f(20.0f, 20.0f, -20.0f);
+	glTexCoord2f(0, 0); glVertex3f(32.0f, -32.0f, -32.0f);
+	glTexCoord2f(1, 0); glVertex3f(-32.0f, -32.0f, -32.0f);
+	glTexCoord2f(1, 1); glVertex3f(-32.0f, 32.0f, -32.0f);
+	glTexCoord2f(0, 1); glVertex3f(32.0f, 32.0f, -32.0f);
 	glEnd();
 
 	// Render the left quad
 	glBindTexture(GL_TEXTURE_2D, _skybox[1]);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glVertex3f(20.0f, -20.0f, 20.0f);
-	glTexCoord2f(1, 0); glVertex3f(20.0f, -20.0f, -20.0f);
-	glTexCoord2f(1, 1); glVertex3f(20.0f, 20.0f, -20.0f);
-	glTexCoord2f(0, 1); glVertex3f(20.0f, 20.0f, 20.0f);
+	glTexCoord2f(0, 0); glVertex3f(32.0f, -32.0f, 32.0f);
+	glTexCoord2f(1, 0); glVertex3f(32.0f, -32.0f, -32.0f);
+	glTexCoord2f(1, 1); glVertex3f(32.0f, 32.0f, -32.0f);
+	glTexCoord2f(0, 1); glVertex3f(32.0f, 32.0f, 32.0f);
 	glEnd();
 
 	// Render the back quad
 	glBindTexture(GL_TEXTURE_2D, _skybox[2]);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glVertex3f(-20.0f, -20.0f, 20.0f);
-	glTexCoord2f(1, 0); glVertex3f(20.0f, -20.0f, 20.0f);
-	glTexCoord2f(1, 1); glVertex3f(20.0f, 20.0f, 20.0f);
-	glTexCoord2f(0, 1); glVertex3f(-20.0f, 20.0f, 20.0f);
+	glTexCoord2f(0, 0); glVertex3f(-32.0f, -32.0f, 32.0f);
+	glTexCoord2f(1, 0); glVertex3f(32.0f, -32.0f, 32.0f);
+	glTexCoord2f(1, 1); glVertex3f(32.0f, 32.0f, 32.0f);
+	glTexCoord2f(0, 1); glVertex3f(-32.0f, 32.0f, 32.0f);
 
 	glEnd();
 
 	// Render the right quad
 	glBindTexture(GL_TEXTURE_2D, _skybox[3]);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glVertex3f(-20.0f, -20.0f, -20.0f);
-	glTexCoord2f(1, 0); glVertex3f(-20.0f, -20.0f, 20.0f);
-	glTexCoord2f(1, 1); glVertex3f(-20.0f, 20.0f, 20.0f);
-	glTexCoord2f(0, 1); glVertex3f(-20.0f, 20.0f, -20.0f);
+	glTexCoord2f(0, 0); glVertex3f(-32.0f, -32.0f, -32.0f);
+	glTexCoord2f(1, 0); glVertex3f(-32.0f, -32.0f, 32.0f);
+	glTexCoord2f(1, 1); glVertex3f(-32.0f, 32.0f, 32.0f);
+	glTexCoord2f(0, 1); glVertex3f(-32.0f, 32.0f, -32.0f);
 	glEnd();
 
 	// Render the top quad
 	glBindTexture(GL_TEXTURE_2D, _skybox[4]);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 1); glVertex3f(-20.0f, 20.0f, -20.0f);
-	glTexCoord2f(0, 0); glVertex3f(-20.0f, 20.0f, 20.0f);
-	glTexCoord2f(1, 0); glVertex3f(20.0f, 20.0f, 20.0f);
-	glTexCoord2f(1, 1); glVertex3f(20.0f, 20.0f, -20.0f);
+	glTexCoord2f(1, 1); glVertex3f(-32.0f, 32.0f, -32.0f);
+	glTexCoord2f(0, 1); glVertex3f(-32.0f, 32.0f, 32.0f);
+	glTexCoord2f(0, 0); glVertex3f(32.0f, 32.0f, 32.0f);
+	glTexCoord2f(1, 0); glVertex3f(32.0f, 32.0f, -32.0f);
 	glEnd();
 
 	// Render the bottom quad
 	glBindTexture(GL_TEXTURE_2D, _skybox[5]);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glVertex3f(-20.0f, -20.0f, -20.0f);
-	glTexCoord2f(0, 1); glVertex3f(-20.0f, -20.0f, 20.0f);
-	glTexCoord2f(1, 1); glVertex3f(20.0f, -20.0f, 20.0f);
-	glTexCoord2f(1, 0); glVertex3f(20.0f, -20.0f, -20.0f);
+	glTexCoord2f(1, 0); glVertex3f(-32.0f, -32.0f, -32.0f);
+	glTexCoord2f(0, 0); glVertex3f(-32.0f, -32.0f, 32.0f);
+	glTexCoord2f(0, 1); glVertex3f(32.0f, -32.0f, 32.0f);
+	glTexCoord2f(1, 1); glVertex3f(32.0f, -32.0f, -32.0f);
 	glEnd();
 
 	// Restore enable bits and matrix
 	glPopAttrib();
 	glPopMatrix();
 
-
+	/*
 	// draw the floor
 	setAmbientColor(.1f,.1f,.1f);
 	setDiffuseColor(COLOR_RED);
@@ -279,7 +279,7 @@ void SampleModel::draw()
 	glTranslated(-5,0,-5);
 	drawBox(10,0.01f,10);
 	glPopMatrix();
-
+	*/
 	// draw the sample model
 	setAmbientColor(.1f,.1f,.1f);
 	setDiffuseColor(COLOR_GREEN);

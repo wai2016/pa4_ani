@@ -295,7 +295,7 @@ void SampleModel::draw()
 		glTranslated(-1, 2.8, -0.6);
 		ParticleSystem* cloth = ModelerApplication::Instance()->GetParticleSystemCloth();
 		float time = ModelerApplication::Instance()->GetTime();
-		cloth->computeForcesAndUpdateClothParticles(time);
+		cloth->computeForcesAndUpdateClothParticles(time, Vec3f(VAL(XPOS), VAL(YPOS), VAL(ZPOS)));
 		cloth->drawClothParticles(time);
 		glPopMatrix();
 		setAmbientColor(.1f, .1f, .1f);
